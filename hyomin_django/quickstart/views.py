@@ -9,13 +9,14 @@ from hyomin_django.quickstart.models import MyKrWeather, MyPit
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-# import pandas as pd
+import pandas as pd
 import numpy as np
-# import matplotlib.pyplot as plt
-# from matplotlib import font_manager, rc #한글이 나오게
+import matplotlib.pyplot as plt
+from matplotlib import font_manager, rc #한글이 나오게
 
 import json
 from collections import OrderedDict
+import base64
 
 # class UserViewSet(viewsets.ModelViewSet):
 #     """
@@ -36,11 +37,43 @@ from collections import OrderedDict
 
 
 
-# 1. 전국 날씨 데이터
+# 날씨 데이터
 class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MyKrWeather.objects.all()
     serializer_class = MyKrWeatherSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+    # 1. 전국 날씨 데이터
+    @action(detail=False, methods=['GET'])
+    def weather(self, request):
+        qs = self.get_queryset()
+        serializer = self.get_serializer(qs, many=True)
+
+
+        df1 = pd.DataFrame(serializer.data)
+        df1.columns = ['id','area','diary','now_temp','pysical_temp','rain','snow','moisture']
+        area = df1['area']
+        float_temp = df1['now_temp'].astype('float')
+        area_index = range(len(df1['area']))
+        font_name = font_manager.FontProperties(fname="C:\\Users\\Min\\Desktop\\python\\H2PORL.ttf").get_name() # Font 경로 재설정
+        rc('font', family=font_name)
+        fig = plt.figure(figsize=(16, 2), dpi=100)
+        ax1 = fig.add_subplot(1,2,1)
+        ax1.bar(area_index , float_temp, align='center', color='darkblue')
+        ax1.xaxis.set_ticks_position('bottom')
+        ax1.yaxis.set_ticks_position('left')
+        plt.xticks(area_index , area, rotation=0, fontsize='small')
+
+        # 그래프를 파일 저장
+        fig = plt.gcf()
+        fig.savefig('myfile.png', dpi=fig.dpi)
+
+
+        with open('myfile.png', "rb") as image_file:
+            image_data = base64.b64encode(image_file.read()).decode('utf-8')
+        ctx = {'image': image_data}
+        return render(request, 'C:\\rest_ful\\hyomin_django\\hyomin_django\\quickstart\\index.html', ctx)
+        # return Response(serializer.data)
     
     # 2. 내 지역 날씨 데이터
     @action(detail=False, methods=['GET'])
