@@ -50,6 +50,7 @@ class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(qs, many=True)
 
 
+        # 그래프 그리기
         df1 = pd.DataFrame(serializer.data)
         df1.columns = ['id','area','diary','now_temp','pysical_temp','rain','snow','moisture']
         area = df1['area']
@@ -57,21 +58,24 @@ class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
         area_index = range(len(df1['area']))
         font_name = font_manager.FontProperties(fname="C:\\Users\\Min\\Desktop\\python\\H2PORL.ttf").get_name() # Font 경로 재설정
         rc('font', family=font_name)
+        plt.rc('font', size=2)
         fig = plt.figure(figsize=(16, 2), dpi=100)
         ax1 = fig.add_subplot(1,2,1)
         ax1.bar(area_index , float_temp, align='center', color='darkblue')
         ax1.xaxis.set_ticks_position('bottom')
         ax1.yaxis.set_ticks_position('left')
         plt.xticks(area_index , area, rotation=0, fontsize='small')
+        
 
         # 그래프를 파일 저장
         fig = plt.gcf()
         fig.savefig('myfile.png', dpi=fig.dpi)
 
-
+        # 파일 읽어오기
         with open('myfile.png', "rb") as image_file:
             image_data = base64.b64encode(image_file.read()).decode('utf-8')
         ctx = {'image': image_data}
+        # 파일 리턴
         return render(request, 'C:\\rest_ful\\hyomin_django\\hyomin_django\\quickstart\\index.html', ctx)
         # return Response(serializer.data)
     
