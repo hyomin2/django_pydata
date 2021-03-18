@@ -58,8 +58,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'hyomin_django'),
-             os.path.join(BASE_DIR, 'hyomin_django', 'hyomin_django', 'quickstart')
-        ],
+             os.path.join(BASE_DIR, 'hyomin_django', 'hyomin_django', 'quickstart')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

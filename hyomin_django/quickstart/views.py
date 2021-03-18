@@ -49,7 +49,6 @@ class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
         qs = self.get_queryset()
         serializer = self.get_serializer(qs, many=True)
 
-
         # 그래프 그리기
         df1 = pd.DataFrame(serializer.data)
         df1.columns = ['id','area','diary','now_temp','pysical_temp','rain','snow','moisture']
@@ -66,7 +65,6 @@ class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
         ax1.yaxis.set_ticks_position('left')
         plt.xticks(area_index , area, rotation=0, fontsize='small')
         
-
         # 그래프를 파일 저장
         fig = plt.gcf()
         fig.savefig('myfile.png', dpi=fig.dpi)
@@ -74,8 +72,9 @@ class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
         # 파일 읽어오기
         with open('myfile.png', "rb") as image_file:
             image_data = base64.b64encode(image_file.read()).decode('utf-8')
-        ctx = {'image': image_data}
+
         # 파일 리턴
+        ctx = {'image': image_data}
         return render(request, 'C:\\rest_ful\\hyomin_django\\hyomin_django\\quickstart\\index.html', ctx)
         # return Response(serializer.data)
     
@@ -243,7 +242,7 @@ class MyKrWeatherViewSet(viewsets.ReadOnlyModelViewSet):
 
     
 
-# 1. 쇼핑몰 데이터 전체
+# 쇼핑몰 데이터 전체
 class MyPitViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MyPit.objects.all()
     serializer_class = MyPitSerializer
